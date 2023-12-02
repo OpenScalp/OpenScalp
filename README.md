@@ -1,0 +1,1 @@
+# OpenScalp trading terminal
