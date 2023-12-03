@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  open-scalp-service:
+    container_name: open-scalp-service
+    image: open-scalp-service
+    build:
+      context: .
+      dockerfile: src/OpenScalp.Service.Api/Dockerfile
+    ports:
+      - "8081:80"
+    environment:
+      - urls=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
