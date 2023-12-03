@@ -4,10 +4,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A14A1C71-19B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenScalp.TradingTerminal.Abstractions", "src\OpenScalp.TradingTerminal.Abstractions\OpenScalp.TradingTerminal.Abstractions.csproj", "{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenScalp.Service.Api", "src\OpenScalp.Service.Api\OpenScalp.Service.Api.csproj", "{BF149F60-1808-4434-9295-B3A1D97C4533}"
+EndProject
 Global
 	GlobalSection(NestedProjects) = preSolution
 		{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97} = {A14A1C71-19BF-41C1-89A7-36A0C51B8C8B}
+		{BF149F60-1808-4434-9295-B3A1D97C4533} = {A14A1C71-19BF-41C1-89A7-36A0C51B8C8B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF149F60-1808-4434-9295-B3A1D97C4533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF149F60-1808-4434-9295-B3A1D97C4533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF149F60-1808-4434-9295-B3A1D97C4533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF149F60-1808-4434-9295-B3A1D97C4533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9E779B6-7E6B-47B8-AFA7-BB1161EECD97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 EndGlobal
