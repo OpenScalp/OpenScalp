@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
+using OpenScalp.Service.Api;
 using Prometheus;
 using Serilog;
 
@@ -22,6 +23,8 @@ services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
+
+services.AddSignalR();
 
 services.AddSwaggerGen(options =>
 {
@@ -53,6 +56,8 @@ services.AddHealthChecks().ForwardToPrometheus();
 
 services.AddHttpLogging(logging => { logging.LoggingFields = HttpLoggingFields.All; });
 
+services.AddHostedService<QuikOrderBookPrototypeHostService>();
+
 var app = builder.Build();
 
 app.UseRouting();
@@ -74,5 +79,6 @@ app.UseSwagger(options => { options.RouteTemplate = "swagger/{documentName}/swag
 
 app.MapHealthChecks("/health");
 app.MapMetrics();
+app.MapHub<TradingHub>("/tradingHub");
 
 app.Run();
