@@ -16,6 +16,7 @@ public class QuikTradingTerminal : ITradingTerminal
     private readonly ILogger<QuikTradingTerminal> _logger;
     private Task _readCallbackMessagesLoopTask;
     private readonly ConcurrentDictionary<string, Channel<OrderBook>> _subscribeOrderBooks = new();
+    private readonly ConcurrentDictionary<string, Channel<Trade>> _subscribeAllTrades = new();
 
     public QuikTradingTerminal(
         QuikSharpConnection quikSharpConnection,
@@ -42,6 +43,16 @@ public class QuikTradingTerminal : ITradingTerminal
                         .ToArray();
 
                     channel.Writer.TryWrite(new OrderBook(bids, asks));
+                }
+            }
+
+            if (message is Message<AllTrade> messageAllTrade)
+            {
+                if (_subscribeAllTrades.TryGetValue(messageAllTrade.Data.SecCode, out var channel))
+                {
+                    channel.Writer.TryWrite(new Trade((decimal)messageAllTrade.Data.Price,
+                        (decimal)messageAllTrade.Data.Qty,
+                        messageAllTrade.Data.Flags == AllTradeFlags.Buy ? TradeType.Buy : TradeType.Sell));
                 }
             }
         }
@@ -80,6 +91,20 @@ public class QuikTradingTerminal : ITradingTerminal
 
             _subscribeOrderBooks.TryRemove(ticket, out _);
         }, _loggerFactory.CreateLogger<QuikSubscriptionOrderBook>());
+    }
+
+    public Task<ISubscriptionTrade> SubscribeTradeAsync(string ticket, CancellationToken cancellationToken = default)
+    {
+        var channel = _subscribeAllTrades.GetOrAdd(ticket, Channel.CreateUnbounded<Trade>());
+
+        return Task.FromResult<ISubscriptionTrade>(new QuikSubscriptionTrade(channel.Reader, () =>
+        {
+            channel.Writer.Complete();
+
+            _subscribeOrderBooks.TryRemove(ticket, out _);
+
+            return ValueTask.CompletedTask;
+        }, _loggerFactory.CreateLogger<QuikSubscriptionTrade>()));
     }
 
     public async Task<TicketInfo> GetTicketInfoAsync(string ticket, CancellationToken cancellationToken = default)

@@ -9,4 +9,9 @@ public class TradingHub : Hub<ITerminalClient>
     {
         await Clients.All.OnOrderBookUpdate(orderBook);
     }
+
+    public async Task SendTradeToClients(Trade trade)
+    {
+        await Clients.All.OnTrade(trade);
+    }
 }

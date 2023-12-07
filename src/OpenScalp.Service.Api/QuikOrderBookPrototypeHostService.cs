@@ -12,17 +12,14 @@ public class QuikOrderBookPrototypeHostService : BackgroundService
 {
     private readonly IHubContext<TradingHub, ITerminalClient> _tradingHub;
     private readonly ITradingTerminalConnection _tradingTerminalConnection;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<QuikOrderBookPrototypeHostService> _logger;
 
     public QuikOrderBookPrototypeHostService(IHubContext<TradingHub, ITerminalClient> tradingHub,
         ITradingTerminalConnection tradingTerminalConnection,
-        ILoggerFactory loggerFactory,
         ILogger<QuikOrderBookPrototypeHostService> logger)
     {
         _tradingHub = tradingHub;
         _tradingTerminalConnection = tradingTerminalConnection;
-        _loggerFactory = loggerFactory;
         _logger = logger;
     }
 
@@ -31,10 +28,29 @@ public class QuikOrderBookPrototypeHostService : BackgroundService
         var tradingTerminal = await _tradingTerminalConnection.CreateAsync(stoppingToken);
 
         await using var subscriptionOrderBook = await tradingTerminal.SubscribeOrderBookAsync("NGZ3", stoppingToken);
+        await using var subscribeTrade = await tradingTerminal.SubscribeTradeAsync("NGZ3", stoppingToken);
 
+        var subscriptionOrderBookTask = SubscriptionOrderBookTask(subscriptionOrderBook, stoppingToken);
+        var subscriptionTradeTask = SubscriptionTradeTask(subscribeTrade, stoppingToken);
+
+        await Task.WhenAll(subscriptionOrderBookTask, subscriptionTradeTask);
+    }
+
+    private async Task SubscriptionOrderBookTask(ISubscriptionOrderBook subscriptionOrderBook,
+        CancellationToken stoppingToken)
+    {
         await foreach (var order in subscriptionOrderBook.Orders.ReadAllAsync(stoppingToken))
         {
             await _tradingHub.Clients.All.OnOrderBookUpdate(order);
+        }
+    }
+
+    private async Task SubscriptionTradeTask(ISubscriptionTrade subscriptionTrade,
+        CancellationToken stoppingToken)
+    {
+        await foreach (var trade in subscriptionTrade.Trades.ReadAllAsync(stoppingToken))
+        {
+            await _tradingHub.Clients.All.OnTrade(trade);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -15,24 +16,26 @@ public static class MessageSerialization
     private static readonly byte[] VNameUtf8 = "v"u8.ToArray();
     private static readonly byte[] DataNameUtf8 = "data"u8.ToArray();
 
-    private static readonly IReadOnlyDictionary<string, Type?> DataTypes = new Dictionary<string, Type?>()
+    private static readonly IReadOnlyDictionary<string, Type?> DataTypes = new Dictionary<string, Type?>
     {
         ["OnQuote"] = typeof(OrderBook),
         ["ping"] = typeof(string),
         ["getSecurityInfo"] = typeof(SecurityInfo),
         ["Subscribe_Level_II_Quotes"] = typeof(bool),
         ["IsSubscribed_Level_II_Quotes"] = typeof(bool),
-        ["Unsubscribe_Level_II_Quotes"] = typeof(bool)
+        ["Unsubscribe_Level_II_Quotes"] = typeof(bool),
+        ["OnAllTrade"] = typeof(AllTrade)
     };
 
-    private static readonly IReadOnlyDictionary<string, Type?> MessageTypes = new Dictionary<string, Type?>()
+    private static readonly IReadOnlyDictionary<string, Type?> MessageTypes = new Dictionary<string, Type?>
     {
         ["OnQuote"] = typeof(OrderBook),
         ["ping"] = typeof(PingResponse),
         ["getSecurityInfo"] = typeof(SecurityInfoResponse),
         ["Subscribe_Level_II_Quotes"] = typeof(SubscribeOrderBookResponse),
         ["IsSubscribed_Level_II_Quotes"] = typeof(IsSubscribedOrderBookResponse),
-        ["Unsubscribe_Level_II_Quotes"] = typeof(UnsubscribeOrderBookResponse)
+        ["Unsubscribe_Level_II_Quotes"] = typeof(UnsubscribeOrderBookResponse),
+        ["OnAllTrade"] = typeof(AllTrade)
     };
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
@@ -244,6 +247,20 @@ public static class MessageSerialization
                 CreatedTime = t!.Value,
                 ValidUntil = v,
                 Data = (bool)data!
+            };
+
+            return true;
+        }
+
+        if (type == typeof(AllTrade))
+        {
+            message = new Message<AllTrade>
+            {
+                Id = id,
+                Command = cmd!,
+                CreatedTime = t!.Value,
+                ValidUntil = v,
+                Data = (AllTrade)data!
             };
 
             return true;
