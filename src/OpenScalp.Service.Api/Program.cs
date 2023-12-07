@@ -28,7 +28,12 @@ services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-services.AddSignalR();
+services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter());
+    });
 
 services.AddSwaggerGen(options =>
 {
