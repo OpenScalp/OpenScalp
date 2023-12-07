@@ -42,6 +42,8 @@ public class QuikSharpConnection
 
     public IAsyncEnumerable<IMessage> CallbackMessages => _inputChannel.Reader.ReadAllAsync();
 
+    public void Complete() => _outputChannel.Writer.Complete();
+
     public async Task<SecurityInfo> GetSecurityInfo(string classCode, string secCode)
     {
         var request = new SecurityInfoRequest(classCode, secCode);
@@ -56,6 +58,24 @@ public class QuikSharpConnection
         var request = new SubscribeOrderBookRequest(classCode, secCode);
 
         var response = await SendMessageAsync<SubscribeOrderBookRequest, SubscribeOrderBookResponse>(request);
+
+        return response.Data;
+    }
+
+    public async Task<bool> UnsubscribeOrderBook(string classCode, string secCode)
+    {
+        var request = new UnsubscribeOrderBookRequest(classCode, secCode);
+
+        var response = await SendMessageAsync<UnsubscribeOrderBookRequest, UnsubscribeOrderBookResponse>(request);
+
+        return response.Data;
+    }
+
+    public async Task<bool> IsSubscribedOrderBook(string classCode, string secCode)
+    {
+        var request = new IsSubscribedOrderBookRequest(classCode, secCode);
+
+        var response = await SendMessageAsync<IsSubscribedOrderBookRequest, IsSubscribedOrderBookResponse>(request);
 
         return response.Data;
     }
