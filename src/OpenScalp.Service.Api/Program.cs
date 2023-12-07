@@ -2,7 +2,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.OpenApi.Models;
+using OpenScalp.QuikSharp;
 using OpenScalp.Service.Api;
+using OpenScalp.TradingTerminal.Abstractions;
+using OpenScalp.TradingTerminal.Quik;
 using Prometheus;
 using Serilog;
 
@@ -14,6 +17,7 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfigura
 
 
 var services = builder.Services;
+var configuration = builder.Configuration;
 
 services
     .AddControllers()
@@ -56,6 +60,8 @@ services.AddHealthChecks().ForwardToPrometheus();
 
 services.AddHttpLogging(logging => { logging.LoggingFields = HttpLoggingFields.All; });
 
+services.Configure<QuikTradingTerminalConnectionOptions>(configuration.GetSection("QuikTradingTerminalConnection"));
+services.AddSingleton<ITradingTerminalConnection, QuikTradingTerminalConnection>();
 services.AddHostedService<QuikOrderBookPrototypeHostService>();
 
 var app = builder.Build();

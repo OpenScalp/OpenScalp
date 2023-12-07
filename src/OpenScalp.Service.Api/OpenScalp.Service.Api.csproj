@@ -31,6 +31,7 @@
     <ItemGroup>
       <ProjectReference Include="..\OpenScalp.QuikSharp\OpenScalp.QuikSharp.csproj" />
       <ProjectReference Include="..\OpenScalp.TradingTerminal.Abstractions\OpenScalp.TradingTerminal.Abstractions.csproj" />
+      <ProjectReference Include="..\OpenScalp.TradingTerminal.Quik\OpenScalp.TradingTerminal.Quik.csproj" />
     </ItemGroup>
 
     <ItemGroup>

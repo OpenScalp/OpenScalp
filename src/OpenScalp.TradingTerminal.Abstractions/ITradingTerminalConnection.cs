@@ -2,5 +2,5 @@
 
 public interface ITradingTerminalConnection
 {
-    Task<ITradingTerminal> CreateAsync(CancellationToken cancellationToken);
+    Task<ITradingTerminal> CreateAsync(CancellationToken cancellationToken = default);
 }
